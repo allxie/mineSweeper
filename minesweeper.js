@@ -1,23 +1,10 @@
-//Take input about dimensions
-
-//depending on dimensions, append squares.
-//Line break when rows get to a certain size
-//
-
-//Array of objects
-// {"number" : x
-// ,"value" : 0-8 or mine
-// ,""}
-
-//JSON suggestion:
-// Array of objects
-// {"x-axis": x,
-// "y-axis" : y,
-// "visible": true/false,
-// "minePresence" : true/false,
-// "displayValue" : 0-9}
-//
-// (0 is mine, 9 is blank, or vice versa)
+// need to add:
+// 0 pop
+// flagging
+// lose
+// win...I guess?
+// timer?
+// score
 
 //when we click a square, it changes color::
 window.onload =function(){
@@ -83,7 +70,7 @@ window.onload =function(){
 		console.log("square Array :: ", squareArray);
 		var count = 0;
 		for(var i = 0; i < totalSquares; i++){
-			squareArray[i].id = "s" + count;
+			squareArray[i].id = "#s" + count;
 			count +=1;
 		}
 	};
@@ -105,60 +92,108 @@ window.onload =function(){
 
 	var sweep = function(){
 		console.log("yo from sweep");
-		var $x = $(event.target);
+		// var $x = $(event.target);
 		var squareId = event.target.id;
 		//this will then be the position in the array
 		var squareIdNum = Number(squareId.slice(1));
-		// $x.css("background-color","red");
-		// $x.css("border-style","inset");
+		reveal(squareIdNum);
+	}
+
+	var reveal = function(squareIdNum){
+		var x = squareArray[squareIdNum].id;
+		console.log("should be id ", squareArray[squareIdNum].id);
+
 		if(squareArray[squareIdNum].isMine){
 			console.log("ITT'S MINE!");
-			$x.css("background-color","red");
-			$x.css("border-style","inset");
+			$(x).css("background-color","red");
+			$(x).css("border-style","inset");
 			//freeze the game because you lost.
 			// lose();
 		} else{
 			console.log("not mine");
-			$x.css("background-color","#ecf0f1");
-			$x.css("border-style","inset");
-			
-			var touchCount = calcTouching(squareIdNum, boardWidth);
-			$x.html(touchCount);
+			if (squareArray[squareIdNum].clickedStatus != "clicked"){
+				squareArray[squareIdNum].clickedStatus = "clicked";
+				$(x).css("background-color","#ecf0f1");
+				$(x).css("border-style","inset");
+				console.log($(x));
+
+				var totalTouching = calcTouching(squareIdNum, boardWidth);
+				if (totalTouching !=0){
+					$(x).html(totalTouching);
+				} else if (totalTouching === 0) {
+						determinePosition(squareIdNum);
+						if(!top){
+							reveal(squareIdNum-boardWidth);
+						}
+						determinePosition(squareIdNum);
+						if(!top && !left){ //this is bugging out
+							console.log("SquareIDNumb inside not top not left:: ", squareIdNum);
+							reveal(squareIdNum-(Number(boardWidth)+1));
+							console.log("is this getting here>");
+						}
+						determinePosition(squareIdNum);
+						if(!top && !right){
+							reveal(squareIdNum-(Number(boardWidth)-1));
+							console.log("Not Top Not Right");
+						}
+						determinePosition(squareIdNum);
+						if(!right){
+							reveal(squareIdNum+1);
+							console.log("Not Right")
+						}
+						determinePosition(squareIdNum);
+						if(!left){
+							reveal(squareIdNum-1);
+							console.log("Not Left")
+						}
+						determinePosition(squareIdNum);
+						if(!bottom && !left){
+							reveal(squareIdNum+(Number(boardWidth)-1));
+							console.log("Not Bottom Not Left")
+						}
+						determinePosition(squareIdNum);
+						if(!bottom && !right){
+							reveal(squareIdNum+(Number(boardWidth)+1));
+						}
+						determinePosition(squareIdNum);
+						if(!top){
+							reveal(Number(squareIdNum)+Number(boardWidth));
+						}
+				}
+			}
 		}
 	}
-	//there's got to be a faster way to do this.
-	var calcTouching = function(index){
-		var top = false;
-		var left = false;
-		var right = false;
-		var bottom = false;
-		console.log("first Board Width: ", boardWidth);
-		// var boardWidth = Number(boardWidth);
-		var touchCount = 0;
 
-		console.log(typeof boardWidth);
-		console.log("Board Width ", boardWidth);
-		var otherWidth = Number(boardWidth) + 1;
-		console.log("other width : ", otherWidth);
-		console.log(index);
-		console.log("boardwidth plus 1", Number(Number(boardWidth)+1));
-		var offset = Number(boardWidth) + 1;
-		console.log(offset);
-		console.log("Index-offset " , Number(index)-Number(offset));
+	var top = false;
+	var left = false;
+	var right = false;
+	var bottom = false;
+
+	var determinePosition = function(index){
+		top = false;
+		left = false;
+		right = false;
+		bottom = false;
 
 		if(index < boardWidth){
-			top = true;
+			top = true; //means this is ON the top
 		}
 		if(index%boardWidth === 0 || index === 0){
-			left = true;
+			left = true; //ON the left
 		}
 		if((index+1)%boardWidth === 0){
 			right = true;
 		}
-		console.log("Super board:: ", boardWidth*(boardHeight-1));
+		// console.log("Super board:: ", boardWidth*(boardHeight-1));
 		if(index >= (boardWidth*(boardHeight-1))){
 			bottom = true;
 		}
+	}
+
+	//there's got to be a faster way to do this.
+	var calcTouching = function(index){
+		determinePosition(index);
+		var touchCount=0;
 
 		if(!left && squareArray[index-1].isMine){ //left
 			console.log("left");
@@ -169,7 +204,7 @@ window.onload =function(){
 			touchCount += 1;
 		}
 
-		if(!left && !top && squareArray[index - offset].isMine){ //upper left
+		if(!left && !top && squareArray[index - (Number(boardWidth)+1)].isMine){ //upper left
 			console.log("Up left");
 			touchCount += 1;
 		}
