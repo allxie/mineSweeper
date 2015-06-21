@@ -30,8 +30,8 @@ window.onload =function(){
 		// grabs the two dimensions or defaults to 20
 		boardHeight = $("#boardHeight").val() || 20;
 		boardWidth = $("#boardWidth").val() || 20;
-		console.log("assigning board width");
-		var numMines = $("#numMines").val();
+		// console.log("assigning board width");
+		var numMines = $("#numMines").val(); // or calculate, like, a third of the total and make it that.
 		var squareCount = 0;
 		$("#boardHeight").val("");
 		$("#boardWidth").val("");
@@ -42,12 +42,13 @@ window.onload =function(){
 		//if the user put more mines than there are squares
 		if(totalSquares < numMines){
 			$("#message").html("Dude. Too many mines. You definitely need fewer than " + (totalSquares-1) + " for a board that size, and probably more like " + (Math.floor(totalSquares/3)) + ".");
+			//JSON: I feel like that should be lower.
 		} else {
 			//first clear any previous boards
 			$("#board").html("");
 			squareArray = [];
 			// Cycles through each for the board height
-			for(i=0; i < boardHeight; i++){
+			for(var i=0; i < boardHeight; i++){
 				thisRow = "";
 				for (var j = 0; j < boardWidth; j++) {
 					// builds up a row with the correct width
@@ -68,21 +69,23 @@ window.onload =function(){
 
 		for (var i = 0; i < totalSquares; i++) {
 			if (i < numMines){
+				// var squareObj = {"isMine": true};
 				var squareObj = {"id": null, "isMine": true, "clickedStatus" : "notClicked"};
 			} else {
 				var squareObj = {"id": null, "isMine": false, "clickedStatus" : "notClicked"};
+				// var squareObj = {"isMine": false};
 			}
 			squareArray.push(squareObj);
-			squareArray = shuffle(squareArray);
-			// console.log("square Array :: ", squareArray);
-			var count = 0;
+
 		}
 
+		squareArray = shuffle(squareArray);
+		console.log("square Array :: ", squareArray);
+		var count = 0;
 		for(var i = 0; i < totalSquares; i++){
 			squareArray[i].id = "s" + count;
 			count +=1;
 		}
-
 	};
 
 	//this shuffles an array. Is used to shuffle mines.
@@ -95,36 +98,44 @@ window.onload =function(){
 	  }
 	  return array;
 	}
+
 	var $square = $('#board');
+	// When we click on a square, call the sweep function.
 
 
 	var sweep = function(){
+		console.log("yo from sweep");
 		var $x = $(event.target);
 		var squareId = event.target.id;
 		//this will then be the position in the array
 		var squareIdNum = Number(squareId.slice(1));
-		$x.css("background-color","red");
-		$x.css("border-style","inset");
+		// $x.css("background-color","red");
+		// $x.css("border-style","inset");
 		if(squareArray[squareIdNum].isMine){
+			console.log("ITT'S MINE!");
 			$x.css("background-color","red");
 			$x.css("border-style","inset");
+			//freeze the game because you lost.
+			// lose();
 		} else{
+			console.log("not mine");
 			$x.css("background-color","#ecf0f1");
+			$x.css("border-style","inset");
+			
 			var touchCount = calcTouching(squareIdNum, boardWidth);
 			$x.html(touchCount);
 		}
 	}
 	//there's got to be a faster way to do this.
 	var calcTouching = function(index){
+		var top = false;
+		var left = false;
+		var right = false;
+		var bottom = false;
 		console.log("first Board Width: ", boardWidth);
 		// var boardWidth = Number(boardWidth);
 		var touchCount = 0;
-		if(squareArray[index-1].isMine){ //left
-			touchCount += 1;
-		}
-		if(squareArray[index+1].isMine){ //right
-			touchCount += 1;
-		}
+
 		console.log(typeof boardWidth);
 		console.log("Board Width ", boardWidth);
 		var otherWidth = Number(boardWidth) + 1;
@@ -134,27 +145,57 @@ window.onload =function(){
 		var offset = Number(boardWidth) + 1;
 		console.log(offset);
 		console.log("Index-offset " , Number(index)-Number(offset));
-		if(squareArray[index - offset].isMine){ //upper left
+
+		if(index < boardWidth){
+			top = true;
+		}
+		if(index%boardWidth === 0 || index === 0){
+			left = true;
+		}
+		if((index+1)%boardWidth === 0){
+			right = true;
+		}
+		console.log("Super board:: ", boardWidth*(boardHeight-1));
+		if(index >= (boardWidth*(boardHeight-1))){
+			bottom = true;
+		}
+
+		if(!left && squareArray[index-1].isMine){ //left
+			console.log("left");
 			touchCount += 1;
 		}
-		if(squareArray[index - Number(boardWidth)].isMine){ //upper middle
+		if(!right && squareArray[index+1].isMine){ //right
+			console.log("Right");
 			touchCount += 1;
 		}
-		if(squareArray[index - (Number(boardWidth)-1)].isMine){ //upper right
+
+		if(!left && !top && squareArray[index - offset].isMine){ //upper left
+			console.log("Up left");
 			touchCount += 1;
 		}
-		if(squareArray[index + (Number(boardWidth)+1)].isMine){ //lower right
+		if(!top && squareArray[index - Number(boardWidth)].isMine){ //upper middle
+			console.log("up mid");
 			touchCount += 1;
 		}
-		if(squareArray[index + Number(boardWidth)].isMine){ //lower middle
+		if(!top && !right && squareArray[index - (Number(boardWidth)-1)].isMine){ //upper right
 			touchCount += 1;
+			console.log("up right");
 		}
-		if(squareArray[index + (Number(boardWidth)-1)].isMine){ //lower left
+		if(!bottom && !right && squareArray[index + (Number(boardWidth)+1)].isMine){ //lower right
 			touchCount += 1;
+			console.log("lower right");
+		}
+		if(!bottom && squareArray[index + Number(boardWidth)].isMine){ //lower middle
+			touchCount += 1;
+			console.log("lower mid");
+		}
+		if(!bottom && !left && squareArray[index + (Number(boardWidth)-1)].isMine){ //lower left
+			touchCount += 1;
+			console.log("lower left");
 		}
 		return touchCount;
 	}
-	// When we click on a square, call the sweep function.
 	$($square).click(sweep);
+
 
 }
