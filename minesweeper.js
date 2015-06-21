@@ -21,14 +21,16 @@
 
 //when we click a square, it changes color::
 window.onload =function(){
-
+	var boardHeight;
+	var boardWidth;
 	// To make the board the right size
 	$("#customBoard").submit(function(event){
 		event.preventDefault();
 		var thisRow;
 		// grabs the two dimensions or defaults to 20
-		var boardHeight = $("#boardHeight").val() || 20;
-		var boardWidth = $("#boardWidth").val() || 20;
+		boardHeight = $("#boardHeight").val() || 20;
+		boardWidth = $("#boardWidth").val() || 20;
+		console.log("assigning board width");
 		var numMines = $("#numMines").val();
 		var squareCount = 0;
 		$("#boardHeight").val("");
@@ -72,7 +74,7 @@ window.onload =function(){
 			}
 			squareArray.push(squareObj);
 			squareArray = shuffle(squareArray);
-			console.log("square Array :: ", squareArray);
+			// console.log("square Array :: ", squareArray);
 			var count = 0;
 		}
 
@@ -81,14 +83,9 @@ window.onload =function(){
 			count +=1;
 		}
 
-
-		//is there a random distribution algorithm? or maybe just use the shuffle with the total set...
-		//maybe create an array of objects of size totalSquares with the first numMines of them having the mines
-		// Then shuffle them.
-		// Then assign the id.
-
 	};
 
+	//this shuffles an array. Is used to shuffle mines.
 	var shuffle = function(array){
 	  for (var i = array.length - 1; i > 0; i--) {
 	      var j = Math.floor(Math.random() * (i + 1));
@@ -99,7 +96,7 @@ window.onload =function(){
 	  return array;
 	}
 	var $square = $('#board');
-	console.log("page loaded!");
+
 
 	var sweep = function(){
 		var $x = $(event.target);
@@ -113,7 +110,49 @@ window.onload =function(){
 			$x.css("border-style","inset");
 		} else{
 			$x.css("background-color","#ecf0f1");
+			var touchCount = calcTouching(squareIdNum, boardWidth);
+			$x.html(touchCount);
 		}
+	}
+	//there's got to be a faster way to do this.
+	var calcTouching = function(index){
+		console.log("first Board Width: ", boardWidth);
+		// var boardWidth = Number(boardWidth);
+		var touchCount = 0;
+		if(squareArray[index-1].isMine){ //left
+			touchCount += 1;
+		}
+		if(squareArray[index+1].isMine){ //right
+			touchCount += 1;
+		}
+		console.log(typeof boardWidth);
+		console.log("Board Width ", boardWidth);
+		var otherWidth = Number(boardWidth) + 1;
+		console.log("other width : ", otherWidth);
+		console.log(index);
+		console.log("boardwidth plus 1", Number(Number(boardWidth)+1));
+		var offset = Number(boardWidth) + 1;
+		console.log(offset);
+		console.log("Index-offset " , Number(index)-Number(offset));
+		if(squareArray[index - offset].isMine){ //upper left
+			touchCount += 1;
+		}
+		if(squareArray[index - Number(boardWidth)].isMine){ //upper middle
+			touchCount += 1;
+		}
+		if(squareArray[index - (Number(boardWidth)-1)].isMine){ //upper right
+			touchCount += 1;
+		}
+		if(squareArray[index + (Number(boardWidth)+1)].isMine){ //lower right
+			touchCount += 1;
+		}
+		if(squareArray[index + Number(boardWidth)].isMine){ //lower middle
+			touchCount += 1;
+		}
+		if(squareArray[index + (Number(boardWidth)-1)].isMine){ //lower left
+			touchCount += 1;
+		}
+		return touchCount;
 	}
 	// When we click on a square, call the sweep function.
 	$($square).click(sweep);
