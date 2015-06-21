@@ -21,18 +21,27 @@
 
 //when we click a square, it changes color::
 window.onload =function(){
-	var thisRow;
 
-	for(i=0; i<20; i++){
-		thisRow = "";
-		console.log("doing the thing");
-		for (var j = 0; j < 20; j++) {
-			thisRow  += "<td id='s61' class='box'></td>";
-			// $("#board").append( "<td id='s61' class='box'></td>" );
+	$("#customBoard").submit(function(event){
+		event.preventDefault();
+		var thisRow;
+		var boardHeight = $("#boardHeight").val() || 20;
+		var boardWidth = $("#boardHWidth").val() || 20;
+		console.log(boardHeight, boardWidth);
+		var numMines = $("numMines");
+
+		for(i=0; i <= boardHeight; i++){
+			thisRow = "";
+			console.log("doing the thing");
+			for (var j = 0; j <= boardWidth; j++) {
+				thisRow  += "<td id='s61' class='box'></td>";
+				// $("#board").append( "<td id='s61' class='box'></td>" );
+			};
+			$("#board").append( "<tr>" + thisRow + "</tr>" );
+			// $("#board").append( "Goodbye</tr>" );
 		};
-		$("#board").append( "<tr>" + thisRow + "</tr>" );
-		// $("#board").append( "Goodbye</tr>" );
-	};
+	});
+
 	var $square = $('#board');
 	console.log("page loaded!");
 
@@ -40,6 +49,7 @@ window.onload =function(){
 		console.log("WASSAP");
 		var $x = $(event.target);
 		$x.css("background-color","red");
+		$x.css("border-style","inset");
 	}
 
 	$($square).click(sweep);
