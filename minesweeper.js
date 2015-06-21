@@ -43,6 +43,7 @@ window.onload =function(){
 		} else {
 			//first clear any previous boards
 			$("#board").html("");
+			squareArray = [];
 			// Cycles through each for the board height
 			for(i=0; i < boardHeight; i++){
 				thisRow = "";
@@ -59,21 +60,60 @@ window.onload =function(){
 		}
 	});
 
-	var placeMines = function(numMines, height, width){
-		var totalSquares = height * width;
+	//in here goes all of the square objects
+	var squareArray = [];
+	var placeMines = function(numMines, totalSquares){
+
+		for (var i = 0; i < totalSquares; i++) {
+			if (i < numMines){
+				var squareObj = {"id": null, "isMine": true, "clickedStatus" : "notClicked"};
+			} else {
+				var squareObj = {"id": null, "isMine": false, "clickedStatus" : "notClicked"};
+			}
+			squareArray.push(squareObj);
+			squareArray = shuffle(squareArray);
+			console.log("square Array :: ", squareArray);
+			var count = 0;
+		}
+
+		for(var i = 0; i < totalSquares; i++){
+			squareArray[i].id = "s" + count;
+			count +=1;
+		}
 
 
+		//is there a random distribution algorithm? or maybe just use the shuffle with the total set...
+		//maybe create an array of objects of size totalSquares with the first numMines of them having the mines
+		// Then shuffle them.
+		// Then assign the id.
 
+	};
+
+	var shuffle = function(array){
+	  for (var i = array.length - 1; i > 0; i--) {
+	      var j = Math.floor(Math.random() * (i + 1));
+	      var temp = array[i];
+	      array[i] = array[j];
+	      array[j] = temp;
+	  }
+	  return array;
 	}
-
 	var $square = $('#board');
 	console.log("page loaded!");
 
 	var sweep = function(){
-		console.log("WASSAP");
 		var $x = $(event.target);
+		var squareId = event.target.id;
+		//this will then be the position in the array
+		var squareIdNum = Number(squareId.slice(1));
 		$x.css("background-color","red");
 		$x.css("border-style","inset");
+		if(squareArray[squareIdNum].isMine){
+			$x.css("background-color","red");
+			$x.css("border-style","inset");
+		} else{
+			$x.css("background-color","#ecf0f1");
+		}
 	}
 	// When we click on a square, call the sweep function.
 	$($square).click(sweep);
