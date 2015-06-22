@@ -237,13 +237,17 @@ window.onload =function(){
 	}
 	$($square).click(sweep);
 
-	$('#board').bind("contextmenu",function(e){
-		// $("#contextMenu").data('originalElement', this);
-		// var originalElement = $("#contextMenu").data('originalElement');
-   	// var $x = e.target;
-   	var x = event.target
-   	$(x).html("?");
 
+
+//right click to flag as questionable
+	$('#board').bind("contextmenu",function(e){
+   	var x = event.target;
+   	var rClickSquareId = x.id;
+   	var rClickSquareId = Number(rClickSquareId.slice(1));
+   	//only do this if it hasn't already been clicked.
+   	if(squareArray[rClickSquareId].clickedStatus != clicked){
+	   	$(x).html("?");
+ 		}
    	return false;
 	});
 
