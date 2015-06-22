@@ -91,6 +91,11 @@ window.onload =function(){
 
 
 	var sweep = function(){
+		if( event.which == 3 ) {
+			event.preventDefault();
+      console.log('Right mouse button!');
+      return false;
+    }
 		console.log("yo from sweep");
 		// var $x = $(event.target);
 		var squareId = event.target.id;
@@ -156,7 +161,7 @@ window.onload =function(){
 							reveal(squareIdNum+(Number(boardWidth)+1));
 						}
 						determinePosition(squareIdNum);
-						if(!top){
+						if(!bottom){
 							reveal(Number(squareIdNum)+Number(boardWidth));
 						}
 				}
@@ -231,6 +236,17 @@ window.onload =function(){
 		return touchCount;
 	}
 	$($square).click(sweep);
+
+	$('#board').bind("contextmenu",function(e){
+		// $("#contextMenu").data('originalElement', this);
+		// var originalElement = $("#contextMenu").data('originalElement');
+   	// var $x = e.target;
+   	var x = event.target
+   	$(x).html("?");
+
+   	return false;
+	});
+
 
 
 }
