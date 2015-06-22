@@ -91,17 +91,16 @@ window.onload =function(){
 
 
 	var sweep = function(){
-		if( event.which == 3 ) {
-			event.preventDefault();
-      console.log('Right mouse button!');
-      return false;
-    }
+
 		console.log("yo from sweep");
-		// var $x = $(event.target);
-		var squareId = event.target.id;
-		//this will then be the position in the array
-		var squareIdNum = Number(squareId.slice(1));
-		reveal(squareIdNum);
+		var $x = $(event.target);
+		//make sure it's not flagged.
+		if ($x.html() != "X"){
+			var squareId = event.target.id;
+			//this will then be the position in the array
+			var squareIdNum = Number(squareId.slice(1));
+			reveal(squareIdNum);
+		}
 	}
 
 	var reveal = function(squareIdNum){
@@ -112,6 +111,7 @@ window.onload =function(){
 			console.log("ITT'S MINE!");
 			$(x).css("background-color","red");
 			$(x).css("border-style","inset");
+			squareArray[squareIdNum].clickedStatus = "clicked";
 			//freeze the game because you lost.
 			// lose();
 		} else{
@@ -126,6 +126,7 @@ window.onload =function(){
 				if (totalTouching !=0){
 					$(x).html(totalTouching);
 				} else if (totalTouching === 0) {
+						$(x).html("");
 						determinePosition(squareIdNum);
 						if(!top){
 							reveal(squareIdNum-boardWidth);
@@ -245,8 +246,15 @@ window.onload =function(){
    	var rClickSquareId = x.id;
    	var rClickSquareId = Number(rClickSquareId.slice(1));
    	//only do this if it hasn't already been clicked.
-   	if(squareArray[rClickSquareId].clickedStatus != clicked){
-	   	$(x).html("?");
+   	if(squareArray[rClickSquareId].clickedStatus != "clicked"){
+   		if($(x).html() === ""){
+   			$(x).html("?");
+   		}
+   		else if($(x).html() === "?"){
+   			$(x).html("X");
+   		} else if ($(x).html() === "X"){
+				$(x).html("");
+   		}
  		}
    	return false;
 	});
