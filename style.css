@@ -21,12 +21,10 @@ table{
 	background-color: #7f8c8d;
 }
 
-#loseExplosion{
+img{
 	width: 100%;
 	display: none;
 	opacity: 50%;
-	/*position: relative;
-	top: -300px;*/
 	position: fixed;
 	top: 10px;
 	left: 10px;

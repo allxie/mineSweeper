@@ -1,5 +1,5 @@
 // need to add:
-// lose --> Need to make stuff unclickable.
+
 // win...I guess?
 // timer?
 // score
@@ -10,6 +10,7 @@ window.onload = function(){
 	var boardHeight;
 	var boardWidth;
 	var notLost = true;
+	var groundToSweep = 0;
 	// To make the board the right size
 	$("#customBoard").submit(function(event){
 		event.preventDefault();
@@ -21,11 +22,13 @@ window.onload = function(){
 		// console.log("assigning board width");
 		var numMines = $("#numMines").val(); // or calculate, like, a third of the total and make it that.
 		var squareCount = 0;
+
 		// $("#boardHeight").val("");
 		// $("#boardWidth").val("");
 		// $("#numMines").val("");
 
 		var totalSquares = boardHeight * boardWidth;
+		groundToSweep = totalSquares - numMines;
 
 		//if the user put more mines than there are squares
 		if(totalSquares < numMines){
@@ -121,10 +124,14 @@ window.onload = function(){
 		} else{
 			console.log("not mine");
 			if (squareArray[squareIdNum].clickedStatus != "clicked"){
+				groundToSweep -= 1;
 				squareArray[squareIdNum].clickedStatus = "clicked";
 				$(x).css("background-color","#ecf0f1");
 				$(x).css("border-style","inset");
 				console.log($(x));
+				if(groundToSweep === 0){
+					win();
+				}
 
 				var totalTouching = calcTouching(squareIdNum, boardWidth);
 				if (totalTouching !=0){
@@ -136,7 +143,7 @@ window.onload = function(){
 							reveal(squareIdNum-boardWidth);
 						}
 						determinePosition(squareIdNum);
-						if(!top && !left){ //this is bugging out
+						if(!top && !left){
 							console.log("SquareIDNumb inside not top not left:: ", squareIdNum);
 							reveal(squareIdNum-(Number(boardWidth)+1));
 							console.log("is this getting here>");
@@ -188,6 +195,14 @@ window.onload = function(){
 		setTimeout(function(){
 			$("#loseExplosion").css("display","none");
 		}, 1000);
+	}
+
+	var win = function(){
+		console.log("YOU WIN!");
+		$("#win").css("display","block");
+		setTimeout(function(){
+			$("#win").css("display","none");
+		}, 3000);
 	}
 
 	var top = false;
