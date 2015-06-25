@@ -1,28 +1,29 @@
 // need to add:
-// 0 pop
-// flagging
-// lose
+// lose --> Need to make stuff unclickable.
 // win...I guess?
 // timer?
 // score
+// high score
 
 //when we click a square, it changes color::
-window.onload =function(){
+window.onload = function(){
 	var boardHeight;
 	var boardWidth;
+	var notLost = true;
 	// To make the board the right size
 	$("#customBoard").submit(function(event){
 		event.preventDefault();
 		var thisRow;
+		notLost = true;
 		// grabs the two dimensions or defaults to 20
 		boardHeight = $("#boardHeight").val() || 20;
 		boardWidth = $("#boardWidth").val() || 20;
 		// console.log("assigning board width");
 		var numMines = $("#numMines").val(); // or calculate, like, a third of the total and make it that.
 		var squareCount = 0;
-		$("#boardHeight").val("");
-		$("#boardWidth").val("");
-		$("#numMines").val("");
+		// $("#boardHeight").val("");
+		// $("#boardWidth").val("");
+		// $("#numMines").val("");
 
 		var totalSquares = boardHeight * boardWidth;
 
@@ -53,6 +54,7 @@ window.onload =function(){
 	//in here goes all of the square objects
 	var squareArray = [];
 	var placeMines = function(numMines, totalSquares){
+		$($square).click(sweep);
 
 		for (var i = 0; i < totalSquares; i++) {
 			if (i < numMines){
@@ -113,7 +115,9 @@ window.onload =function(){
 			$(x).css("border-style","inset");
 			squareArray[squareIdNum].clickedStatus = "clicked";
 			//freeze the game because you lost.
-			// lose();
+			if(notLost){
+				lose();
+			}
 		} else{
 			console.log("not mine");
 			if (squareArray[squareIdNum].clickedStatus != "clicked"){
@@ -168,6 +172,22 @@ window.onload =function(){
 				}
 			}
 		}
+	}
+	var lose = function(){
+		$("#board").off('click');
+		notLost = false;
+		console.log("you lose");
+		$("#loseExplosion").css("display","block");
+			var allSquares = Number(boardWidth) * Number(boardHeight);
+
+		for(var i = 0; i < allSquares; i++){
+			if(squareArray[i].isMine){
+				reveal(i);
+			}
+		}
+		setTimeout(function(){
+			$("#loseExplosion").css("display","none");
+		}, 1000);
 	}
 
 	var top = false;
@@ -248,11 +268,10 @@ window.onload =function(){
    	//only do this if it hasn't already been clicked.
    	if(squareArray[rClickSquareId].clickedStatus != "clicked"){
    		if($(x).html() === ""){
-   			$(x).html("?");
-   		}
-   		else if($(x).html() === "?"){
    			$(x).html("X");
-   		} else if ($(x).html() === "X"){
+   		} else if($(x).html() === "X"){
+   			$(x).html("?");
+   		} else if ($(x).html() === "?"){
 				$(x).html("");
    		}
  		}
