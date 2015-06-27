@@ -109,23 +109,26 @@ window.onload = function(){
 	}
 
 	var reveal = function(squareIdNum){
-		var x = squareArray[squareIdNum].id;
-		console.log("should be id ", squareArray[squareIdNum].id);
+		console.log("Revealing! ", squareIdNum);
 
-		if(squareArray[squareIdNum].isMine){
-			console.log("ITT'S MINE!");
-			$(x).css("background-color","red");
-			$(x).css("border-style","inset");
-			squareArray[squareIdNum].clickedStatus = "clicked";
-			//freeze the game because you lost.
-			if(notLost){
-				lose();
-			}
-		} else{
-			console.log("not mine");
-			if (squareArray[squareIdNum].clickedStatus != "clicked"){
-				groundToSweep -= 1;
+		// console.log("should be id ", squareArray[squareIdNum].id);
+		if (squareArray[squareIdNum].clickedStatus != "clicked"){
 				squareArray[squareIdNum].clickedStatus = "clicked";
+				console.log("Really revealing! ", squareIdNum);
+				var x = squareArray[squareIdNum].id;
+
+			if(squareArray[squareIdNum].isMine){
+				$(x).css("background-color","red");
+				$(x).css("border-style","inset");
+				squareArray[squareIdNum].clickedStatus = "clicked";
+				//freeze the game because you lost.
+				if(notLost){
+					//need to add "if won" logic
+					lose();
+				}
+			} else{
+				console.log("not mine");
+				groundToSweep -= 1;
 				$(x).css("background-color","#ecf0f1");
 				$(x).css("border-style","inset");
 				console.log($(x));
@@ -133,51 +136,50 @@ window.onload = function(){
 					win();
 				}
 
-				var totalTouching = calcTouching(squareIdNum, boardWidth);
-				if (totalTouching !=0){
-					$(x).html(totalTouching);
-				} else if (totalTouching === 0) {
-						$(x).html("");
-						determinePosition(squareIdNum);
-						if(!top){
-							reveal(squareIdNum-boardWidth);
-						}
-						determinePosition(squareIdNum);
-						if(!top && !left){
-							console.log("SquareIDNumb inside not top not left:: ", squareIdNum);
-							reveal(squareIdNum-(Number(boardWidth)+1));
-							console.log("is this getting here>");
-						}
-						determinePosition(squareIdNum);
-						if(!top && !right){
-							reveal(squareIdNum-(Number(boardWidth)-1));
-							console.log("Not Top Not Right");
-						}
-						determinePosition(squareIdNum);
-						if(!right){
-							reveal(squareIdNum+1);
-							console.log("Not Right")
-						}
-						determinePosition(squareIdNum);
-						if(!left){
-							reveal(squareIdNum-1);
-							console.log("Not Left")
-						}
-						determinePosition(squareIdNum);
-						if(!bottom && !left){
-							reveal(squareIdNum+(Number(boardWidth)-1));
-							console.log("Not Bottom Not Left")
-						}
-						determinePosition(squareIdNum);
-						if(!bottom && !right){
-							reveal(squareIdNum+(Number(boardWidth)+1));
-						}
-						determinePosition(squareIdNum);
-						if(!bottom){
-							reveal(Number(squareIdNum)+Number(boardWidth));
-						}
+					var totalTouching = calcTouching(squareIdNum, boardWidth);
+					if (totalTouching !=0){
+						$(x).html(totalTouching);
+					} else if (totalTouching === 0) {
+							$(x).html("");
+							determinePosition(squareIdNum);
+							if(!top){
+								reveal(squareIdNum-boardWidth);
+							}
+							determinePosition(squareIdNum);
+							if(!top && !left){
+								// console.log("SquareIDNumb inside not top not left:: ", squareIdNum);
+								reveal(squareIdNum-(Number(boardWidth)+1));
+							}
+							determinePosition(squareIdNum);
+							if(!top && !right){
+								reveal(squareIdNum-(Number(boardWidth)-1));
+								// console.log("Not Top Not Right");
+							}
+							determinePosition(squareIdNum);
+							if(!right){
+								reveal(squareIdNum+1);
+								// console.log("Not Right")
+							}
+							determinePosition(squareIdNum);
+							if(!left){
+								reveal(squareIdNum-1);
+								// console.log("Not Left")
+							}
+							determinePosition(squareIdNum);
+							if(!bottom && !left){
+								reveal(squareIdNum+(Number(boardWidth)-1));
+								// console.log("Not Bottom Not Left")
+							}
+							determinePosition(squareIdNum);
+							if(!bottom && !right){
+								reveal(squareIdNum+(Number(boardWidth)+1));
+							}
+							determinePosition(squareIdNum);
+							if(!bottom){
+								reveal(Number(squareIdNum)+Number(boardWidth));
+							}
+					}
 				}
-			}
 		}
 	}
 	var lose = function(){
@@ -198,6 +200,7 @@ window.onload = function(){
 	}
 
 	var win = function(){
+		$("#board").off('click');
 		console.log("YOU WIN!");
 		$("#win").css("display","block");
 		setTimeout(function(){
@@ -271,7 +274,7 @@ window.onload = function(){
 		}
 		return touchCount;
 	}
-	$($square).click(sweep);
+	// $($square).click(sweep);
 
 
 
