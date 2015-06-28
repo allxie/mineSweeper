@@ -116,14 +116,13 @@ window.onload = function(){
 				squareArray[squareIdNum].clickedStatus = "clicked";
 				console.log("Really revealing! ", squareIdNum);
 				var x = squareArray[squareIdNum].id;
+				console.log("reveal x", x);
 
 			if(squareArray[squareIdNum].isMine){
-				$(x).css("background-color","red");
-				$(x).css("border-style","inset");
+				
 				squareArray[squareIdNum].clickedStatus = "clicked";
-				//freeze the game because you lost.
-				if(notLost){
-					//need to add "if won" logic
+
+				if(notLost){ //freeze the game because you lost.
 					lose();
 				}
 			} else{
@@ -182,8 +181,8 @@ window.onload = function(){
 				}
 		}
 	}
+
 	var lose = function(){
-		$("#board").off('click');
 		notLost = false;
 		console.log("you lose");
 		$("#loseExplosion").css("display","block");
@@ -191,12 +190,16 @@ window.onload = function(){
 
 		for(var i = 0; i < allSquares; i++){
 			if(squareArray[i].isMine){
-				reveal(i);
+				var x = squareArray[i].id;
+				$(x).css("background-color","red");
+				$(x).css("border-style","inset");
 			}
 		}
 		setTimeout(function(){
 			$("#loseExplosion").css("display","none");
 		}, 1000);
+
+		$("#board").off('click');
 	}
 
 	var win = function(){
