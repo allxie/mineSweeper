@@ -118,13 +118,9 @@ window.onload = function(){
 				var x = squareArray[squareIdNum].id;
 				console.log("reveal x", x);
 
-			if(squareArray[squareIdNum].isMine){
-				
-				squareArray[squareIdNum].clickedStatus = "clicked";
-
-				if(notLost){ //freeze the game because you lost.
+			if(squareArray[squareIdNum].isMine && notLost){
+				 //freeze the game because you lost.
 					lose();
-				}
 			} else{
 				console.log("not mine");
 				groundToSweep -= 1;
@@ -133,52 +129,53 @@ window.onload = function(){
 				console.log($(x));
 				if(groundToSweep === 0){
 					win();
+					return;
 				}
 
-					var totalTouching = calcTouching(squareIdNum, boardWidth);
-					if (totalTouching !=0){
-						$(x).html(totalTouching);
-					} else if (totalTouching === 0) {
-							$(x).html("");
-							determinePosition(squareIdNum);
-							if(!top){
-								reveal(squareIdNum-boardWidth);
-							}
-							determinePosition(squareIdNum);
-							if(!top && !left){
-								// console.log("SquareIDNumb inside not top not left:: ", squareIdNum);
-								reveal(squareIdNum-(Number(boardWidth)+1));
-							}
-							determinePosition(squareIdNum);
-							if(!top && !right){
-								reveal(squareIdNum-(Number(boardWidth)-1));
-								// console.log("Not Top Not Right");
-							}
-							determinePosition(squareIdNum);
-							if(!right){
-								reveal(squareIdNum+1);
-								// console.log("Not Right")
-							}
-							determinePosition(squareIdNum);
-							if(!left){
-								reveal(squareIdNum-1);
-								// console.log("Not Left")
-							}
-							determinePosition(squareIdNum);
-							if(!bottom && !left){
-								reveal(squareIdNum+(Number(boardWidth)-1));
-								// console.log("Not Bottom Not Left")
-							}
-							determinePosition(squareIdNum);
-							if(!bottom && !right){
-								reveal(squareIdNum+(Number(boardWidth)+1));
-							}
-							determinePosition(squareIdNum);
-							if(!bottom){
-								reveal(Number(squareIdNum)+Number(boardWidth));
-							}
-					}
+				var totalTouching = calcTouching(squareIdNum, boardWidth);
+				if (totalTouching !=0){
+					$(x).html(totalTouching);
+				} else if (totalTouching === 0) { // if it's a zero
+						$(x).html("");
+						determinePosition(squareIdNum);
+						if(!top && squareArray[squareIdNum-boardWidth].clickedStatus != "clicked"){
+							reveal(squareIdNum-boardWidth); //check up
+						}
+						determinePosition(squareIdNum);
+						if(!top && !left && squareArray[squareIdNum-(Number(boardWidth)+1)].clickedStatus != "clicked"){
+							// console.log("SquareIDNumb inside not top not left:: ", squareIdNum);
+							reveal(squareIdNum-(Number(boardWidth)+1));
+						}
+						determinePosition(squareIdNum);
+						if(!top && !right && squareArray[squareIdNum-(Number(boardWidth)-1)].clickedStatus != "clicked"){
+							reveal(squareIdNum-(Number(boardWidth)-1));
+							// console.log("Not Top Not Right");
+						}
+						determinePosition(squareIdNum);
+						if(!right && squareArray[squareIdNum+1].clickedStatus != "clicked"){
+							reveal(squareIdNum+1);
+							// console.log("Not Right")
+						}
+						determinePosition(squareIdNum);
+						if(!left && squareArray[squareIdNum-1].clickedStatus != "clicked"){
+							reveal(squareIdNum-1);
+							// console.log("Not Left")
+						}
+						determinePosition(squareIdNum);
+						if(!bottom && !left && squareArray[squareIdNum+(Number(boardWidth)-1)].clickedStatus != "clicked"){
+							reveal(squareIdNum+(Number(boardWidth)-1));
+							// console.log("Not Bottom Not Left")
+						}
+						determinePosition(squareIdNum);
+						if(!bottom && !right && squareArray[squareIdNum+(Number(boardWidth)+1)].clickedStatus != "clicked"){
+							reveal(squareIdNum+(Number(boardWidth)+1));
+						}
+						determinePosition(squareIdNum);
+						if(!bottom && squareArray[Number(squareIdNum)+Number(boardWidth)].clickedStatus != "clicked"){
+							reveal(Number(squareIdNum)+Number(boardWidth));
+						}
 				}
+			}
 		}
 	}
 
